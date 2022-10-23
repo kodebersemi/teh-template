@@ -1,4 +1,4 @@
-function getopt(str, opt) {
+function getval(str, opt) {
   str = str.trim();
   let key = Object.keys(opt).join();
   let val = JSON.stringify(Object.values(opt));
@@ -14,26 +14,22 @@ function getopt(str, opt) {
         `
   );
   try {
-    func();
+    // func();
     return func();
   } catch (e) {
-    return `${str} is not defined`;
+    throw e;
   }
 }
 function print(str, opt) {
+  // console.log("print");
   let temp = str;
-  let match = str.match(/\{\((.*?)\)\}/g);
-  match.forEach((e) => {
-    let test = temp.replace(/\{\((.*?)\)\}/, (m, p) => {
-      return getopt(p, opt);
-    });
-    temp = test;
+  temp = str.replaceAll(/\{\((.*?)\)\}/g, (m, p, q) => {
+    try {
+      return getval(p, opt);
+    } catch (e) {
+      throw e;
+    }
   });
   return temp;
 }
-console.log(
-  print("<h1>{( foo )}--{(Math.floor(Math.random() * 10))}</h1>", {
-    foo: "semi",
-    test: [1, 2, 4],
-  })
-);
+module.exports = print;
